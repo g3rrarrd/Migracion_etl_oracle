@@ -227,17 +227,52 @@ public class Etl_Repository {
     //Migrar los datos de una tabla
     public void migrarDatosTbl(table_static ts, value_static vs){
         try {
-
-            Connection conn = DriverManager.getConnection(valueSttc.url, valueSttc.user, valueSttc.password);
-            PreparedStatement ps = conn.prepareStatement(this.obtenerDatosOgn(ts, vs));
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                
-            }
             
 
+            Connection conn = DriverManager.getConnection(valueSttc.url, valueSttc.user, valueSttc.password);
+            String sql_ogn = this.obtenerDatosOgn(ts, vs);
+
+            PreparedStatement ps = conn.prepareStatement(sql_ogn);
+            PreparedStatement ps_dest;
+            ResultSet rs = ps.executeQuery();
+            ResultSetMetaData rsm = rs.getMetaData();
+
+            Integer columns_count = rsm.getColumnCount(); 
+
+            while (rs.next()) {
+                StringBuilder insertSQL = this.generarInsert(ts, vs);
+                for (int i = 1; i <= columns_count; i++) {
+                    String columnName = rsm.getColumnName(i);
+                    String valor = rs.getString(i);
+
+                    if (ts.getColumna_origen().containsValue(columnName)) {
+                        
+                        
+                        if(this.indiceMapa(ts.getColumna_origen(), columnName) == ts.getColumna_destino().size()){
+                            if (rsm.getColumnType(i) == 1 || rsm.getColumnType(i) == 12) {
+                                insertSQL.append("'" + valor.replace("'", "`") + "')");
+                            }else{
+                                insertSQL.append(valor.replace("'", "`") + ")");
+                            }
+                        }
+                        else{
+                            if (rsm.getColumnType(i) == 1 || rsm.getColumnType(i) == 12) {
+                                insertSQL.append("'" + valor.replace("'", "`") + "'," );
+                            }else{
+                                insertSQL.append(valor.replace("'", "`") + ",");
+                            }
+                        }
+                        
+                    }
+                }
+                    String sql = insertSQL.toString();
+                    ps_dest = conn.prepareStatement(sql);
+                    ps_dest.executeQuery();
+                }
+
+                conn.commit(); 
+                System.out.println("Datos insertados correctamente");
+            
         } catch (Exception e) {
             // TODO: handle exception
         }

@@ -54,17 +54,25 @@ public class Etl_Service_Imp implements Etl_Service{
     
             resultado = entrada.nextLine();
 
-            if (Integer.valueOf(resultado) < value_table.size()) {
-                ts.setTablas_ogn(value_table.get(Integer.valueOf(resultado)));
-                ts.getTablas_origen().remove(ts.getTablas_ogn());    
-            }
-            else{
-                System.out.println("Tabla no existe");
-                this.obtenerUsuarioOrigen();
+            if(value_table.containsKey(Integer.valueOf(resultado))){
+                if (Integer.valueOf(resultado) < value_table.size()) {
+                    ts.setTablas_ogn(value_table.get(Integer.valueOf(resultado)));
+                    ts.getTablas_origen().remove(ts.getTablas_ogn());    
+                }
+                else{
+                    System.out.println("Tabla no existe");
+                    this.obtenerUsuarioOrigen();
+                }
+            }else{
+                throw new IllegalArgumentException("Valor disponible no coincide con ninguna de la tablas");
             }
     
             
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e){
+            System.err.println(e.getMessage());
+            this.obtener_tablasOrigen();
+        }
+        catch (Exception e) {
             System.out.println("No se ha podido mostrar las tablas del usuario: " + vs.getUser_o() + " por la exception: ");
             System.err.println(e.getMessage());
             this.obtener_tablasOrigen();
@@ -96,14 +104,23 @@ public class Etl_Service_Imp implements Etl_Service{
     
             resultado = entrada.nextLine();
     
-            if (Integer.valueOf(resultado) <= value_table.size()){
-                ts.setTablas_dtn(value_table.get(Integer.valueOf(resultado)));
-                ts.getTablas_destino().remove(ts.getTablas_dtn());
-            }else{
-                System.out.println("Tabla no encontrada");
-                this.obtenerCant_tbl_dest();
+            if(value_table.containsKey(Integer.valueOf(resultado))){
+                if (Integer.valueOf(resultado) <= value_table.size()){
+                    ts.setTablas_dtn(value_table.get(Integer.valueOf(resultado)));
+                    ts.getTablas_destino().remove(ts.getTablas_dtn());
+                }else{
+                    System.out.println("Tabla no encontrada");
+                    this.obtenerCant_tbl_dest();
+                }
             }
-        } catch (Exception e) {
+            else{
+                throw new IllegalArgumentException("Valor disponible no coincide con ninguna de la tablas");
+            }
+        } catch (IllegalArgumentException e){
+            System.err.println(e.getMessage());
+            this.obtener_tablasDestino();
+        }
+        catch (Exception e) {
             System.out.println("Ha ocurrido una exception al llamar las tablas destino: ");
             System.err.println(e.getMessage());            
         }
@@ -112,56 +129,82 @@ public class Etl_Service_Imp implements Etl_Service{
     //Obtener el usuario origen 
     @Override
     public void obtenerUsuarioOrigen() {
-        List<String> usuarios = er.getUsernames();
-        String resultado = new String();
-        Map<Integer, String> value_user = new HashMap<>();
-        Integer value = 0;
-        Scanner entrada = new Scanner(System.in);
+        try {
+            List<String> usuarios = er.getUsernames();
+            String resultado = new String();
+            Map<Integer, String> value_user = new HashMap<>();
+            Integer value = 0;
+            Scanner entrada = new Scanner(System.in);
 
-        System.out.println("Que usuario desea que sea el origen: \n");
-        for (String user : usuarios ){
-            if(user.matches("C##\\w+")){
-                value += 1;
-                System.out.println(value + ". " + user);
-                value_user.put(value, user);
+            System.out.println("Que usuario desea que sea el origen: \n");
+            for (String user : usuarios ){
+                if(user.matches("C##\\w+")){
+                    value += 1;
+                    System.out.println(value + ". " + user);
+                    value_user.put(value, user);
+                }
             }
+
+            System.out.println("\n");
+            System.out.println("Ingrese su opcion de Origen: ");
+
+            
+            resultado = entrada.nextLine();
+            
+
+            if(value_user.containsKey(Integer.valueOf(resultado))){
+                vs.setUser_o(value_user.get(Integer.valueOf(resultado)));
+            }else{
+                throw new IllegalArgumentException("El valor recibido no esta dentro del rango") ;
+            }
+
+        }catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            this.obtenerUsuarioOrigen();
         }
-
-        System.out.println("\n");
-        System.out.println("Ingrese su opcion de Origen: ");
-
-        
-        resultado = entrada.nextLine();
-        
-
-        vs.setUser_o(value_user.get(Integer.valueOf(resultado)));
+        catch (Exception e) {
+            System.out.println("El usuario no existe: ");
+            System.out.println("Exception: " + e.getMessage());
+        }
         
     }
 
     //Obtener Usuario Destino
     @Override
     public void obtenerUsuarioDestino() {
-        List<String> usuarios = er.getUsernames();
-        String resultado = new String();
-        Map<Integer, String> value_user = new HashMap<>();
-        Integer value = 0;
-        Scanner entrada = new Scanner(System.in);
+        try {
+            List<String> usuarios = er.getUsernames();
+            String resultado = new String();
+            Map<Integer, String> value_user = new HashMap<>();
+            Integer value = 0;
+            Scanner entrada = new Scanner(System.in);
 
-        System.out.println("Que usuario desea que sea el destino: \n");
-        for (String user : usuarios ){
-            if(user.matches("C##\\w+")){
-                value += 1;
-                System.out.println(value + ". " + user);
-                value_user.put(value, user);
+            System.out.println("Que usuario desea que sea el destino: \n");
+            for (String user : usuarios ){
+                if(user.matches("C##\\w+")){
+                    value += 1;
+                    System.out.println(value + ". " + user);
+                    value_user.put(value, user);
+                }
             }
+
+            System.out.println("\n");
+            System.out.println("Ingrese su opcion de Destino: ");
+
+            resultado = entrada.nextLine();
+
+            if(value_user.containsKey(Integer.valueOf(resultado))){
+                vs.setUser_d(value_user.get(Integer.parseInt(resultado)));
+            }else{
+                throw new IllegalArgumentException("Valor no esta dentro de las opciones disponibles");
+            }
+        }catch (IllegalArgumentException e){
+            System.err.println(e.getMessage());
+            this.obtenerUsuarioDestino();
+        }catch (Exception e) {
+            System.out.println("El usuario no existe: ");
+            System.err.println("Exception: " + e.getMessage());
         }
-
-        System.out.println("\n");
-        System.out.println("Ingrese su opcion de Destino: ");
-
-        resultado = entrada.nextLine();
-
-        vs.setUser_d(value_user.get(Integer.parseInt(resultado)));
     }
 
     //Tomar una decision si usar una tabla origen o una sentencia
@@ -181,7 +224,7 @@ public class Etl_Service_Imp implements Etl_Service{
             case 1:
             decision = true;
             System.out.println("\n Ingrese la sentencia SQL: ");
-            ts.setSQL_Sentence(entrada.nextLine());
+            ts.setSQL_Sentence(entrada.nextLine().replace(";", ""));
             
             
             this.prepararSentencia();
@@ -257,15 +300,19 @@ public class Etl_Service_Imp implements Etl_Service{
                     }
         
                     System.out.println("\n Tabla destino a relacionas es: " + ts.getTablas_dtn() + " Con el campo " + tabla_destino);
-                    System.out.println("\n Tabla origen a relacionar: ");
+                    System.out.println("\n Campo origen a relacionar: ");
                     resultado = entrada.nextLine();
-    
-                    ts.setTablas_ogn(ts.getSQL_Sentence());
+
+                    if (columnas_opciones.containsKey(Integer.valueOf(resultado))) {
+                        ts.setTablas_ogn(ts.getSQL_Sentence());
+                    }else{
+                        throw new IllegalAccessException("Valor fuera del rango establecido");
+                    }                    
     
                     
                 }
                         
-                    
+                   
                 if (ts.getColumna_destino() == null || ts.getColumna_origen() == null){
 
                     columna_origen.put(value_map, columnas_opciones.get(Integer.valueOf(resultado)));
@@ -278,12 +325,15 @@ public class Etl_Service_Imp implements Etl_Service{
                     ts.getColumna_origen().put(value_map, columnas_opciones.get(Integer.valueOf(resultado)));
                     ts.getColumna_destino().put(value_map, tabla_destino);
                 }
+
                 value_map ++;
     
-                
-    
             }
-        } catch (Exception e) {
+        }catch (IllegalAccessError e){
+            System.err.println("\n " + e.getMessage());
+            this.camposTableOrigen();
+        } 
+        catch (Exception e) {
             System.out.println("Ha ocurrido un error al momento de la asignacion");
             System.err.println("Exception: " + e.getMessage());
             this.camposTableOrigen();
