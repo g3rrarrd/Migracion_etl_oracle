@@ -22,6 +22,16 @@ public class readFile {
 
     Etl_Service_Imp esi = new Etl_Service_Imp();
 
+    /**
+    *Lee la primera linea del archivo csv, la cual corresponde al usuario origen y destino
+    *
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    */
     public void leerPrimeraLinea(){
 
         try {
@@ -53,6 +63,17 @@ public class readFile {
 
     }
 
+     /**
+    *Lee todo el archivo exceptuando la linea uno para su respectiiva ejecucion, la estructura basica es:
+    * decision, tabla origen, tabla destino, campo_origen/sentencia , campo_destino
+    *
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    */
     public void leerLineaDecisiones(){
         try {            
             FileReader fr = new FileReader(file);

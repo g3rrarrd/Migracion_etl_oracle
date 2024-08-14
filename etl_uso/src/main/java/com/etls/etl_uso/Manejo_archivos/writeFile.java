@@ -15,6 +15,17 @@ public class writeFile {
 
     File files = new File("../tabla_conf.txt");
 
+     /**
+    *Escribe solamente en la primera linea del archivo csv a los usuarios destino y origen
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    *@param
+    * value_static vs
+    */
     public void escribirUsuarios(value_static vs){
 
         try {
@@ -33,6 +44,20 @@ public class writeFile {
 
     }
 
+     /**
+    *Escribe la configuracion establecida de las tablas, con la relacion entre ellas y sus campos
+    *
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    *@param
+    * table_static t
+    * boolean decision
+    *
+    */
     public void escribirDatosTablas(table_static ts, boolean decision){
         try {
             

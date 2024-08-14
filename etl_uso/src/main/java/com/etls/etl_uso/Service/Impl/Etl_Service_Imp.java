@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ExceptionTypeFilter;
 
+import com.etls.etl_uso.EtlUsoApplication;
 import com.etls.etl_uso.Manejo_archivos.readFile;
 import com.etls.etl_uso.Manejo_archivos.writeFile;
 import com.etls.etl_uso.Repository.Etl_Repository;
@@ -29,7 +30,7 @@ public class Etl_Service_Imp implements Etl_Service{
 
     private boolean decision = false;
 
-    //Obtener la tabla Origen
+
     @Override
     public void obtener_tablasOrigen() {
         try {
@@ -79,7 +80,6 @@ public class Etl_Service_Imp implements Etl_Service{
         }
     }
 
-    //Obtener la tabla Destino
     @Override
     public void obtener_tablasDestino() {
         try {
@@ -126,7 +126,6 @@ public class Etl_Service_Imp implements Etl_Service{
         }
     }
 
-    //Obtener el usuario origen 
     @Override
     public void obtenerUsuarioOrigen() {
         try {
@@ -168,8 +167,7 @@ public class Etl_Service_Imp implements Etl_Service{
         }
         
     }
-
-    //Obtener Usuario Destino
+    
     @Override
     public void obtenerUsuarioDestino() {
         try {
@@ -207,7 +205,6 @@ public class Etl_Service_Imp implements Etl_Service{
         }
     }
 
-    //Tomar una decision si usar una tabla origen o una sentencia
     @Override
     public void decisionSentTabla() {
         try {
@@ -247,14 +244,17 @@ public class Etl_Service_Imp implements Etl_Service{
         
     }
 
+    
     @Override
     public void camposTableOrigen() {
        
         try {
             Map<Integer,String> columnas_opciones = new HashMap<>();
+            Map<Integer,String> columnas_opciones_dest = new HashMap<>();
             Scanner entrada = new Scanner(System.in);
             String resultado = new String();
-            Integer value_map = 0;            
+            Integer value_map = 0; 
+            String resultado_destino = new String();           
     
             
             ts.setColumnas_tabla_de(er.camposTabla(ts.getTablas_dtn(), vs.getUser_d()));
@@ -272,16 +272,24 @@ public class Etl_Service_Imp implements Etl_Service{
                     ts.setColumnas_tabla_or(er.camposTabla(ts.getTablas_ogn(), vs.getUser_o()));
                     
                     Integer value = 0;
+                    System.out.println("\n Tabla destino a relacionas es: " + ts.getTablas_dtn());
+                    for (String columna_relacionar : ts.getColumnas_tabla_de()) {
+                        value += 1;
+                        System.out.println(value + ". " + columna_relacionar);
+                        columnas_opciones_dest.put(value, columna_relacionar);
+                    }
+                    resultado_destino = entrada.nextLine();
+
+                    value = 0;
                     System.out.println("\n Columna a relacionar de la tabla: " + ts.getTablas_ogn());
                     for (String columna : ts.getColumnas_tabla_or()) {
                         value += 1;
                         System.out.println(value + ". " + columna);
                         columnas_opciones.put(value, columna);
-                    }
-        
-                    System.out.println("\n Tabla destino a relacionas es: " + ts.getTablas_dtn() + " Con el campo " + tabla_destino);
-                    System.out.println("\n Tabla origen a relacionar: ");
+                    }                                        
+                    
                     resultado = entrada.nextLine();
+                    
         
                 }
                 //fin del if
@@ -290,7 +298,16 @@ public class Etl_Service_Imp implements Etl_Service{
                     ts.setColumnas_tabla_or(er.camposSentencia(ts.getSQL_Sentence()));
                     
                     Integer value = 0;
-    
+                    System.out.println("\n Tabla destino a relacionas es: " + ts.getTablas_dtn());
+                    for (String columna_relacionar : ts.getColumnas_tabla_de()) {
+                        value += 1;
+                        System.out.println(value + ". " + columna_relacionar);
+                        columnas_opciones_dest.put(value, columna_relacionar);
+                    }
+                    resultado_destino = entrada.nextLine();
+
+                    value = 0;
+
                     System.out.println("\n Columna a relacionar de la sentecia dictada: ");
     
                     for (String columna : ts.getColumnas_tabla_or()) {
@@ -298,9 +315,7 @@ public class Etl_Service_Imp implements Etl_Service{
                         System.out.println(value + ". " + columna);
                         columnas_opciones.put(value, columna);
                     }
-        
-                    System.out.println("\n Tabla destino a relacionas es: " + ts.getTablas_dtn() + " Con el campo " + tabla_destino);
-                    System.out.println("\n Campo origen a relacionar: ");
+                            
                     resultado = entrada.nextLine();
 
                     if (columnas_opciones.containsKey(Integer.valueOf(resultado))) {
@@ -316,20 +331,29 @@ public class Etl_Service_Imp implements Etl_Service{
                 if (ts.getColumna_destino() == null || ts.getColumna_origen() == null){
 
                     columna_origen.put(value_map, columnas_opciones.get(Integer.valueOf(resultado)));
-                    columna_destino.put(value_map, tabla_destino);
+                    columna_destino.put(value_map, columnas_opciones_dest.get(Integer.valueOf(resultado_destino)));
     
-                    ts.setColumna_origen(columna_origen);
-                    ts.setColumna_destino(columna_destino);
+                    if (ts.getColumna_origen().containsKey(resultado) || ts.getColumna_destino().containsKey(resultado_destino)) {
+                        throw new IllegalArgumentException("Error al momento de declarar campos, ya existe un campo con ese valor");
+                    }
+                    else{
+                        ts.setColumna_origen(columna_origen);
+                        ts.setColumna_destino(columna_destino);
+                    }
                 }
                 else{
                     ts.getColumna_origen().put(value_map, columnas_opciones.get(Integer.valueOf(resultado)));
-                    ts.getColumna_destino().put(value_map, tabla_destino);
+                    ts.getColumna_destino().put(value_map, columnas_opciones_dest.get(Integer.valueOf(resultado_destino)));
                 }
 
                 value_map ++;
     
             }
-        }catch (IllegalAccessError e){
+        }catch(IllegalArgumentException e){
+            System.err.println("\n" + e.getMessage());
+            this.camposTableOrigen();
+        }
+        catch (IllegalAccessError e){
             System.err.println("\n " + e.getMessage());
             this.camposTableOrigen();
         } 
@@ -342,10 +366,11 @@ public class Etl_Service_Imp implements Etl_Service{
         
     }
 
+    
     @Override
-    public void trasladarData() {
-       
+    public void trasladarData() {                       
         readFile rf = new readFile();
+
 
         rf.leerPrimeraLinea();
         rf.leerLineaDecisiones();
@@ -354,7 +379,22 @@ public class Etl_Service_Imp implements Etl_Service{
 
 
 
-    //Prepara la sentencia sql para su ejecucion
+    /**
+     * Se encarga de preparar la sentencia dictada para la migracion, colocando los usuarios de destino y de origen
+     * con su respectiva tablas, quitando caracteres que no corresponden, dejando lista la sentecia para su ejecucion
+     * 
+     * @autor
+     * Gerardo Antonio Rodriguez
+     * 
+     * @correo
+     * g_rodriguez51@outlook.com
+     * 
+     * @param
+     * Null
+     * 
+     * @return
+     * Null
+     */
     private void prepararSentencia(){
         String oracion = ts.getSQL_Sentence();
         String[] resultado_partes = oracion.split("[f,F][r,R][o,O][m,M]");
@@ -401,6 +441,7 @@ public class Etl_Service_Imp implements Etl_Service{
 
         }
 
+    
     @Override
     public Integer obtenerCant_tbl_dest() {
         try {
@@ -443,7 +484,7 @@ public class Etl_Service_Imp implements Etl_Service{
 
     @Override
     public void limpiarTablas() {
-        er.limpiarTablas(vs.getUser_d());
+        er.limpiarTablas(vs.getUser_d());      
     }
 
     }

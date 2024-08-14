@@ -19,7 +19,18 @@ public class Etl_Repository {
 
     Connection conn;
     
-    //Obtener los usuarios de la base de datos creados
+     /**
+    *Obtiene a los usuarios disponibles en oracle
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    * 
+    *@return 
+    * List<String>
+    */
     public List<String> getUsernames(){
         try {
             List<String> usuarios = new LinkedList<>();
@@ -38,7 +49,20 @@ public class Etl_Repository {
         }
     }
 
-    //Obtener los tablas de los usuarios
+     /**
+    *Obtiene a las tablas creadas por los usuarios
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    *@param 
+    *   String user
+    *
+    *@return 
+    * List<String>
+    */
     public List<String> getTablesUsers(String user){
         try {
             List<String> tablas = new LinkedList<>();
@@ -58,6 +82,19 @@ public class Etl_Repository {
         }
     }
 
+     /**
+    *Obtiene la cantidad de tablas del usuario destino
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    *@param
+    *   String user
+    *@return 
+    * Integer
+    */
     public Integer cantTabla_destino(String user){
         try {
             List<String> tablas = new LinkedList<>();
@@ -76,7 +113,20 @@ public class Etl_Repository {
         }
     }
 
-    //Obtener los campos de la tabla
+     /**
+    *Obtiene los campos de la tabla
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    *@param
+    * String, String
+    * 
+    *@return 
+    * List<String>
+    */
     public List<String> camposTabla(String tabla, String user){
         try {
             List<String> tablas_columna = new LinkedList<>();
@@ -104,6 +154,20 @@ public class Etl_Repository {
         }
     }
 
+     /**
+    *Obtiene los campos de la sentencia estableciida
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    *@param
+    * String
+    *
+    *@return 
+    * List<String>
+    */
     public List<String> camposSentencia(String sentence_SQL){
         try {
             List<String> campos_Sentencia = new LinkedList<>();            
@@ -128,6 +192,18 @@ public class Etl_Repository {
         }
     }
 
+     /**
+    *Limpia la tabla
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    *
+    * @param 
+    * String
+    *
+    */
     public void limpiarTablas(String user){
         try {
             List<String> tablas = this.getTablesUsers(user);
@@ -156,7 +232,18 @@ public class Etl_Repository {
         }
     }
 
-    //Migrar los datos con una sentencia
+     /**
+    *Migra los datos cuando es usada una sentencia
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    * 
+    *@param 
+    * table_static 
+    * value_static
+    */
     public void migrarDatosSnt(table_static ts, value_static vs){
 
 
@@ -224,7 +311,18 @@ public class Etl_Repository {
 
     }
 
-    //Migrar los datos de una tabla
+    /**
+    *Migra los datos cuando es escogida una tablas
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    * 
+    *@param 
+    * table_static 
+    * value_static
+    */
     public void migrarDatosTbl(table_static ts, value_static vs){
         try {
             
@@ -278,6 +376,21 @@ public class Etl_Repository {
         }
     }
 
+    /**
+    *obtiene los datos del usuario, modificando la sentencia para su uso
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    * 
+    *@param 
+    * table_static 
+    * value_static
+    *
+    *@return
+    * String
+    */
     private String obtenerDatosOgn(table_static ts, value_static vs){
         StringBuilder sb = new StringBuilder();
 
@@ -296,6 +409,21 @@ public class Etl_Repository {
             return sb.toString();
     }
 
+    /**
+    *genera el insert para la tabla destino
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    * 
+    *@param 
+    * table_static 
+    * value_static
+    *
+    *@return
+    * StringBuilder
+    */
     private StringBuilder generarInsert(table_static ts, value_static vs){
 
        StringBuilder sb = new StringBuilder();
@@ -306,6 +434,21 @@ public class Etl_Repository {
 
     }
     
+    /**
+    *obtiene la llave del valor indicado
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com
+    * 
+    *@param 
+    * Map<Integer, String>
+    * String
+    *
+    * @return
+    * Integer
+    */
     private Integer indiceMapa(Map<Integer, String> mapa, String value) {
         for (Map.Entry<Integer, String> entry : mapa.entrySet()) {
             if (value.equals(entry.getValue())) {

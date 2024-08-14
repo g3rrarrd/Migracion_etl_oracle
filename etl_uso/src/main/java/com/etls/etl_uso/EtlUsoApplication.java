@@ -9,8 +9,17 @@ import com.etls.etl_uso.Manejo_archivos.writeFile;
 import com.etls.etl_uso.Service.Impl.Etl_Service_Imp;
 
 @SpringBootApplication
-public class EtlUsoApplication {
+public class EtlUsoApplication {	
 
+	/**
+    *Maneja la toma de decisiones de los usaurios
+    *
+    *
+    *@autor
+    *Gerardo Antonio Rodriguez Contreras
+    *@correo    
+    *g_rodriguez51@outlook.com*
+    */
 	private void opcionesInicio(){
 		Scanner entrada = new Scanner(System.in);
 		
@@ -37,6 +46,7 @@ public class EtlUsoApplication {
 						
 	
 						esi.trasladarData(); 
+						System.out.println("Datos guardado correctamente\n");
 					break;
 				case "2":
 						esi.obtenerUsuarioOrigen();
@@ -44,11 +54,14 @@ public class EtlUsoApplication {
 						esi.limpiarTablas();
 	
 						esi.trasladarData();
+						System.out.println("Datos guardado correctamente\n");
 						break;
 				case "3":
 						esi.obtenerUsuarioOrigen();
 						esi.obtenerUsuarioDestino();
 						esi.limpiarTablas();
+						System.out.println("Se ha limpiado la tabla\n");
+						this.opcionesInicio();
 						break;
 
 				default:
