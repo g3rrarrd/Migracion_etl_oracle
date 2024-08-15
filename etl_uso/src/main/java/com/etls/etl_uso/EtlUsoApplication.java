@@ -56,8 +56,7 @@ public class EtlUsoApplication {
 						esi.trasladarData();
 						System.out.println("Datos guardado correctamente\n");
 						break;
-				case "3":
-						esi.obtenerUsuarioOrigen();
+				case "3":						
 						esi.obtenerUsuarioDestino();
 						esi.limpiarTablas();
 						System.out.println("Se ha limpiado la tabla\n");
