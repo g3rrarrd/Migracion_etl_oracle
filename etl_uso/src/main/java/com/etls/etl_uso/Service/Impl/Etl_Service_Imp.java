@@ -332,14 +332,10 @@ public class Etl_Service_Imp implements Etl_Service{
 
                     columna_origen.put(value_map, columnas_opciones.get(Integer.valueOf(resultado)));
                     columna_destino.put(value_map, columnas_opciones_dest.get(Integer.valueOf(resultado_destino)));
-    
-                    if (ts.getColumna_origen().containsKey(resultado) || ts.getColumna_destino().containsKey(resultado_destino)) {
-                        throw new IllegalArgumentException("Error al momento de declarar campos, ya existe un campo con ese valor");
-                    }
-                    else{
+                        
                         ts.setColumna_origen(columna_origen);
                         ts.setColumna_destino(columna_destino);
-                    }
+                    
                 }
                 else{
                     ts.getColumna_origen().put(value_map, columnas_opciones.get(Integer.valueOf(resultado)));
@@ -349,18 +345,12 @@ public class Etl_Service_Imp implements Etl_Service{
                 value_map ++;
     
             }
-        }catch(IllegalArgumentException e){
-            System.err.println("\n" + e.getMessage());
-            this.camposTableOrigen();
-        }
-        catch (IllegalAccessError e){
+        }catch (IllegalAccessError e){
             System.err.println("\n " + e.getMessage());
-            this.camposTableOrigen();
         } 
         catch (Exception e) {
-            System.out.println("Ha ocurrido un error al momento de la asignacion");
-            System.err.println("Exception: " + e.getMessage());
-            this.camposTableOrigen();
+            System.out.println("Ha ocurrido un error al momento de la asignacion, Asignacion duplicada a la misma columna");
+            System.err.println("Exception: " + e.getMessage());            
         }
 
         
